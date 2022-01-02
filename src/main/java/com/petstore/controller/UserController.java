@@ -60,7 +60,12 @@ public class UserController {
 	public ResponseEntity<?> updateUser(@RequestBody User user, @PathVariable String userName){
 		User localUser = userRepository.findByUsername(userName);
 		if(localUser!=null) {
-			localUser = userRepository.save(user);
+			localUser.setEmail(user.getEmail());
+			localUser.setFirstName(user.getFirstName());
+			localUser.setLastName(user.getLastName());
+			localUser.setPassword(user.getPassword());
+			localUser.setPhone(user.getPhone());
+			userRepository.save(localUser);
 		}else {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
 		}

@@ -14,8 +14,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.petstore.entity.Category;
 import com.petstore.entity.Pet;
+import com.petstore.repository.CategoryRepository;
 import com.petstore.repository.PetRepository;
+import com.petstore.repository.TagRepository;
 import com.petstore.service.UploadServiceImpl;
 
 @RestController
@@ -24,6 +27,12 @@ public class PetController {
 	
 	@Autowired
 	private PetRepository petRepository;
+	
+	@Autowired
+	private CategoryRepository categoryRepository;
+	
+	@Autowired
+	private TagRepository tagRepository;
 	
 	@Autowired
 	private UploadServiceImpl serviceImpl;
@@ -51,9 +60,12 @@ public class PetController {
 	
 	@PutMapping("/{petId}")
 	public ResponseEntity<?> updatePet(@RequestBody Pet pet, @PathVariable Long petId){
-		
-		if(petRepository.existsById(petId)) {
-			Pet p = petRepository.save(pet);
+		Pet p = petRepository.findById(petId).get();
+		if(p!=null) {
+			p.setPetName(pet.getPetName());
+			p.setPetDetail(pet.getPetDetail());
+			p.setPetStatus(pet.getPetStatus());
+			petRepository.save(p);
 			return ResponseEntity.status(HttpStatus.OK).body(p);
 		}else {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Pet not found");
